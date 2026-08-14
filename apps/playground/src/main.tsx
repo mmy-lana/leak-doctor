@@ -29,6 +29,22 @@ const App: React.FC = () => {
   const [leakedRefs, setLeakedRefs] = useState<LeakedRef[]>([]);
   const [detachedElements, setDetachedElements] = useState<HTMLElement[]>([]);
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('autoLeak=true')) {
+      // Intentionally retain 20MB buffer and 3,500 detached DOM nodes on global window
+      const heavyLeak = new Array(2500000).fill('⚡ CRITICAL HEAP RETENTION PAYLOAD ⚡');
+      (window as unknown as { __LEAK_PAYLOAD__: unknown }).__LEAK_PAYLOAD__ = heavyLeak;
+
+      const domStore: HTMLElement[] = [];
+      for (let i = 0; i < 3500; i++) {
+        const div = document.createElement('div');
+        div.textContent = `Uncollected Detached Node ${i}`;
+        domStore.push(div);
+      }
+      (window as unknown as { __DETACHED_DOM__: HTMLElement[] }).__DETACHED_DOM__ = domStore;
+    }
+  }, []);
+
   const simulateDetachedDomLeak = () => {
     const container = document.createElement('div');
     container.className = 'detached-leak-node';

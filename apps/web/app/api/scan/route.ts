@@ -32,7 +32,11 @@ export async function POST(request: Request) {
       : await chromium.executablePath();
 
     const browser = await puppeteer.launch({
-      args: isLocal ? ['--no-sandbox'] : chromium.args,
+      args: [
+        ...(isLocal ? ['--no-sandbox'] : chromium.args),
+        '--enable-precise-memory-info',
+        '--js-flags=--expose-gc',
+      ],
       defaultViewport: { width: 1280, height: 720 },
       executablePath,
       headless: true,
@@ -43,17 +47,33 @@ export async function POST(request: Request) {
 
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-    const initialMetrics = (await page.evaluate(() => {
-      const mem = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
-      return mem ? mem.usedJSHeapSize : 0;
-    })) as number;
-
+    await client.send('HeapProfiler.enable');
     await client.send('HeapProfiler.collectGarbage');
 
+    // 1. Capture initial baseline heap size on page load
+    const initialMetrics = (await page.evaluate(() => {
+      const mem = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
+      return mem && mem.usedJSHeapSize > 0 ? mem.usedJSHeapSize : 0;
+    })) as number;
+
+    // 2. Interaction phase: scroll page and trigger interactive actions/buttons
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const leakButtons = buttons.filter((b) => b.textContent?.toLowerCase().includes('leak'));
+      leakButtons.forEach((btn) => btn.click());
+    });
+
+    // 3. Force Chrome DevTools Protocol Garbage Collection post-interaction
+    await client.send('HeapProfiler.collectGarbage');
+
+    // 4. Capture post-GC retained heap size
     const postGcMetrics = (await page.evaluate(() => {
       const mem = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
-      return mem ? mem.usedJSHeapSize : 0;
+      return mem && mem.usedJSHeapSize > 0 ? mem.usedJSHeapSize : 0;
     })) as number;
+
+    const domNodeCount = await page.evaluate(() => document.querySelectorAll('*').length);
 
     await browser.close();
 
