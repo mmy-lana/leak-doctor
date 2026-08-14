@@ -2,8 +2,11 @@
 const nextConfig = {
   serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
   outputFileTracingIncludes: {
-    '/api/scan': ['./node_modules/@sparticuz/chromium/bin/*'],
-    '/api/scan/route': ['./node_modules/@sparticuz/chromium/bin/*'],
+    '/api/scan': [
+      './node_modules/@sparticuz/chromium/bin/*',
+      '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/*',
+      '../../node_modules/@sparticuz/chromium/bin/*',
+    ],
   },
 };
 
