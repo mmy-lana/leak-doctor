@@ -4,13 +4,22 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 import { formatBytes } from '@leak-doctor/shared';
 
+export interface InteractionRule {
+  type: 'text' | 'selector' | 'xpath';
+  value: string;
+}
+
 export interface ScanResult {
   url: string;
-  initialHeapBytes: number;
-  postGcHeapBytes: number;
-  leakedBytes: number;
-  formattedLeakedBytes: string;
-  healthScore: number;
+  baselineHeapBytes: number;
+  interactiveHeapBytes: number;
+  passiveLeakedBytes: number;
+  interactiveLeakedBytes: number;
+  formattedPassiveLeakedBytes: string;
+  formattedInteractiveLeakedBytes: string;
+  actionTestedDescription: string;
+  passiveHealthScore: number;
+  interactiveHealthScore: number;
   status: 'passed' | 'warning' | 'failed';
   recommendations: string[];
   timestamp: number;
@@ -20,7 +29,7 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
+    const { url, interactions } = (await request.json()) as { url: string; interactions?: InteractionRule[] };
 
     if (!url || typeof url !== 'string' || !url.startsWith('http')) {
       return NextResponse.json({ error: 'Valid URL starting with http:// or https:// is required.' }, { status: 400 });
@@ -47,28 +56,69 @@ export async function POST(request: Request) {
 
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-    await client.send('HeapProfiler.enable');
-    await client.send('HeapProfiler.collectGarbage');
+		await client.send('HeapProfiler.enable');
 
-    // 1. Capture initial baseline heap size on page load
-    const initialMetrics = (await page.evaluate(() => {
+    // 1. Force GC & Capture Baseline (Do Nothing)
+    await client.send('HeapProfiler.collectGarbage');
+    const baselineHeapBytes = (await page.evaluate(() => {
       const mem = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
       return mem && mem.usedJSHeapSize > 0 ? mem.usedJSHeapSize : 0;
     })) as number;
 
-    // 2. Interaction phase: scroll page and trigger interactive actions/buttons
-    await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-      const buttons = Array.from(document.querySelectorAll('button'));
-      const leakButtons = buttons.filter((b) => b.textContent?.toLowerCase().includes('leak'));
-      leakButtons.forEach((btn) => btn.click());
-    });
+    let actionTestedDescription = 'No button interactions executed';
 
-    // 3. Force Chrome DevTools Protocol Garbage Collection post-interaction
+    // 2. Interactive Phase: Custom Rules or Random Button Selection
+    if (interactions && Array.isArray(interactions) && interactions.length > 0) {
+      actionTestedDescription = `Executed ${interactions.length} custom interaction rule(s)`;
+      for (const rule of interactions) {
+        if (!rule.value) continue;
+        try {
+          await page.evaluate((r: InteractionRule) => {
+            if (r.type === 'selector') {
+              const el = document.querySelector(r.value) as HTMLElement;
+              if (el) el.click();
+            } else if (r.type === 'xpath') {
+              const res = document.evaluate(r.value, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+              const el = res.singleNodeValue as HTMLElement;
+              if (el) el.click();
+            } else if (r.type === 'text') {
+              const targets = Array.from(document.querySelectorAll('button, a, [role="button"]'));
+              const match = targets.find((el) => el.textContent?.trim().toLowerCase().includes(r.value.toLowerCase()));
+              if (match) (match as HTMLElement).click();
+            }
+          }, rule);
+        } catch {
+          // Suppress DOM click exceptions
+        }
+      }
+    } else {
+      // Pick 1 visible button randomly
+      const randomClickResult = (await page.evaluate(() => {
+        const clickable = Array.from(document.querySelectorAll('button, [role="button"]')).filter((el) => {
+          const rect = el.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && (el as HTMLElement).offsetParent !== null;
+        });
+
+        if (clickable.length > 0) {
+          const randomIndex = Math.floor(Math.random() * clickable.length);
+          const target = clickable[randomIndex] as HTMLElement;
+          const label = target.textContent?.trim().substring(0, 35) || target.tagName.toLowerCase();
+          const tagInfo = `<${target.tagName.toLowerCase()}${target.className ? ' class="' + target.className.substring(0, 25) + '"' : ''}>`;
+          target.click();
+          return `Randomly tested button #${randomIndex + 1} of ${clickable.length}: "${label}" (${tagInfo})`;
+        }
+        return 'No clickable buttons found on page';
+      })) as string;
+
+      actionTestedDescription = randomClickResult;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+
+    // 3. Force GC & Measure Post-Interactive Heap
     await client.send('HeapProfiler.collectGarbage');
 
-    // 4. Capture post-GC retained heap size
-    const postGcMetrics = (await page.evaluate(() => {
+    const interactiveHeapBytes = (await page.evaluate(() => {
       const mem = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
       return mem && mem.usedJSHeapSize > 0 ? mem.usedJSHeapSize : 0;
     })) as number;
@@ -77,29 +127,47 @@ export async function POST(request: Request) {
 
     await browser.close();
 
-    const leakedBytes = Math.max(0, postGcMetrics - initialMetrics);
-    const healthScore = Math.max(0, 100 - Math.round((leakedBytes / (1024 * 1024)) * 5));
+    const interactiveLeakedBytes = Math.max(0, interactiveHeapBytes - baselineHeapBytes);
+
+    // 1. Passive Health Score (Base Page & DOM Density)
+    const passiveHeapMb = baselineHeapBytes / (1024 * 1024);
+    const passiveDomPenalty = domNodeCount > 2000 ? Math.floor((domNodeCount - 2000) / 200) : 0;
+    const passiveHeapPenalty = passiveHeapMb > 15 ? Math.floor((passiveHeapMb - 15) * 2) : 0;
+    const passiveHealthScore = Math.max(0, Math.min(100, 100 - passiveDomPenalty - passiveHeapPenalty));
+
+    // 2. Interactive Health Score (Sensitive Memory Retention: -2 pts per 100 KB leaked)
+    const leakedKb = interactiveLeakedBytes / 1024;
+    const leakPenalty = Math.round((leakedKb / 100) * 2);
+    const interactiveHealthScore = Math.max(0, Math.min(100, 100 - leakPenalty));
 
     let status: 'passed' | 'warning' | 'failed' = 'passed';
     const recommendations: string[] = [];
 
-    if (leakedBytes > 5 * 1024 * 1024) {
+    if (interactiveLeakedBytes > 2 * 1024 * 1024) {
       status = 'failed';
-      recommendations.push('Critical heap retention detected. Inspect event listeners and uncollected DOM nodes.');
-    } else if (leakedBytes > 1024 * 1024) {
+      recommendations.push(`Critical heap retention (${formatBytes(interactiveLeakedBytes)}) triggered by button action. Inspect event listeners and uncollected DOM nodes.`);
+    } else if (interactiveLeakedBytes > 50 * 1024) {
       status = 'warning';
-      recommendations.push('Moderate heap growth after GC. Ensure component unmount cleanup functions run.');
+      recommendations.push(`Noticeable memory retention (${formatBytes(interactiveLeakedBytes)}) detected after button interaction.`);
     } else {
-      recommendations.push('Clean GC cycle achieved. No significant persistent memory leaks detected.');
+      recommendations.push('Clean GC cycle achieved. No significant persistent memory leaks detected after interaction.');
+    }
+
+    if (domNodeCount > 2000) {
+      recommendations.push(`High DOM element density (${domNodeCount} nodes). Consider virtualization or DOM pruning.`);
     }
 
     const responseData: ScanResult = {
       url,
-      initialHeapBytes: initialMetrics,
-      postGcHeapBytes: postGcMetrics,
-      leakedBytes,
-      formattedLeakedBytes: formatBytes(leakedBytes),
-      healthScore,
+      baselineHeapBytes,
+      interactiveHeapBytes,
+      passiveLeakedBytes: baselineHeapBytes,
+      interactiveLeakedBytes,
+      formattedPassiveLeakedBytes: formatBytes(baselineHeapBytes),
+      formattedInteractiveLeakedBytes: formatBytes(interactiveLeakedBytes),
+      actionTestedDescription,
+      passiveHealthScore,
+      interactiveHealthScore,
       status,
       recommendations,
       timestamp: Date.now(),
