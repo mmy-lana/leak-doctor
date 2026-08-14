@@ -1,4 +1,4 @@
-import { leakDoctor } from 'leak-doctor';
+import { leakDoctor } from '@leak-doctor/profiler';
 import { formatBytes, formatDurationMs, LeakReport, MemorySnapshot } from '@leak-doctor/shared';
 
 export class LeakDoctorToolbar extends HTMLElement {

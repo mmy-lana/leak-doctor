@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { track, trackElement, leakDoctor } from 'leak-doctor';
+import { track, trackElement, leakDoctor } from '@leak-doctor/profiler';
 import '@leak-doctor/toolbar';
 
 declare module 'react' {

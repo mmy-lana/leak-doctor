@@ -26,15 +26,15 @@ importers:
 
   apps/playground:
     dependencies:
+      '@leak-doctor/profiler':
+        specifier: workspace:*
+        version: link:../../packages/profiler
       '@leak-doctor/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@leak-doctor/toolbar':
         specifier: workspace:*
         version: link:../../packages/toolbar
-      leak-doctor:
-        specifier: workspace:*
-        version: link:../../packages/profiler
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -125,12 +125,12 @@ importers:
 
   packages/toolbar:
     dependencies:
+      '@leak-doctor/profiler':
+        specifier: workspace:*
+        version: link:../profiler
       '@leak-doctor/shared':
         specifier: workspace:*
         version: link:../shared
-      leak-doctor:
-        specifier: workspace:*
-        version: link:../profiler
     devDependencies:
       tsup:
         specifier: ^8.5.1

@@ -7,9 +7,9 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@leak-doctor/profiler": "workspace:*",
     "@leak-doctor/shared": "workspace:*",
     "@leak-doctor/toolbar": "workspace:*",
-    "leak-doctor": "workspace:*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

@@ -9,8 +9,8 @@
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
   },
   "dependencies": {
-    "@leak-doctor/shared": "workspace:*",
-    "leak-doctor": "workspace:*"
+    "@leak-doctor/profiler": "workspace:*",
+    "@leak-doctor/shared": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.5.1",
