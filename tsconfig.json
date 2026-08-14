@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@leak-doctor/shared": ["./packages/shared/src/index.ts"],
+      "leak-doctor": ["./packages/profiler/src/index.ts"],
+      "@leak-doctor/toolbar": ["./packages/toolbar/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

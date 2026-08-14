@@ -7,6 +7,9 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@leak-doctor/shared": "workspace:*",
+    "@leak-doctor/toolbar": "workspace:*",
+    "leak-doctor": "workspace:*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -14,7 +17,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
-    "typescript": "^7.0.2",
+    "typescript": "^5.7.3",
     "vite": "^8.2.1"
   }
 }

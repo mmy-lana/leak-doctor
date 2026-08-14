@@ -8,11 +8,14 @@
     "changeset": "changeset"
   },
   "packageManager": "pnpm@9.15.0",
+  "overrides": {
+    "typescript": "^5.7.3"
+  },
   "devDependencies": {
     "@changesets/cli": "^3.0.0",
     "repomix": "^1.18.0",
     "tsup": "^8.5.1",
     "turbo": "^2.10.9",
-    "typescript": "^7.0.2"
+    "typescript": "^5.7.3"
   }
 }
