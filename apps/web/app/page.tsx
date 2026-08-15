@@ -57,9 +57,31 @@ export default function DiagnosticDashboard() {
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#090d16', color: '#f1f5f9', fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', marginBottom: '0.5rem' }}>⚡ LeakDoctor Web Scanner</h1>
-          <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Headless Chromium DOM & JS Heap Memory Leak Audit</p>
+        <header style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem', borderBottom: '1px solid #1e293b', paddingBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', margin: 0 }}>⚡ LeakDoctor Web Scanner</h1>
+              <p style={{ color: '#94a3b8', fontSize: '1.1rem', margin: '0.5rem 0 0 0' }}>Headless Chromium DOM & JS Heap Memory Leak Audit</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <a
+                href="https://github.com/mmy-lana/leak-doctor"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#e2e8f0', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
+              >
+                🐙 GitHub Repo
+              </a>
+              <a
+                href="https://leak-doctor-playground.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
+              >
+                🧪 Playground
+              </a>
+            </div>
+          </div>
         </header>
 
         <form onSubmit={handleScan} style={{ marginBottom: '2.5rem' }}>
@@ -234,6 +256,17 @@ export default function DiagnosticDashboard() {
             </div>
           </div>
         )}
+
+        <footer style={{ marginTop: '4rem', paddingTop: '1.5rem', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+          <div>
+            Built by <a href="https://github.com/mmy-lana" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'none' }}>@mmy-lana</a>
+          </div>
+          <div style={{ display: 'flex', gap: '1.25rem' }}>
+            <a href="https://www.npmjs.com/package/@leak-doctor/profiler" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/profiler</a>
+            <a href="https://www.npmjs.com/package/@leak-doctor/toolbar" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/toolbar</a>
+            <a href="https://www.npmjs.com/package/@leak-doctor/shared" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/shared</a>
+          </div>
+        </footer>
       </div>
     </main>
   );

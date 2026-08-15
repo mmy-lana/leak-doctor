@@ -1,9 +1,19 @@
 {
   "name": "@leak-doctor/profiler",
   "version": "0.1.0",
+  "description": "Core WeakRef and FinalizationRegistry memory profiling and detached DOM leak tracking engine.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./src/index.ts",
+  "homepage": "https://leak-doctor-web.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmy-lana/leak-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mmy-lana/leak-doctor/issues"
+  },
+  "keywords": ["leak-doctor", "memory-leak", "detached-dom", "weakref", "finalizationregistry", "devtools", "react-19"],
   "exports": {
     ".": {
       "types": "./src/index.ts",

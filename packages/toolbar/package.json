@@ -1,9 +1,19 @@
 {
   "name": "@leak-doctor/toolbar",
   "version": "0.1.0",
+  "description": "Zero-dependency Shadow DOM Web Component widget for live browser memory diagnostics.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "homepage": "https://leak-doctor-web.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmy-lana/leak-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mmy-lana/leak-doctor/issues"
+  },
+  "keywords": ["leak-doctor", "web-component", "shadow-dom", "memory-toolbar", "heap-profiler"],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
