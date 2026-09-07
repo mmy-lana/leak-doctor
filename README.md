@@ -1,4 +1,4 @@
-# ⚡ LeakDoctor
+# LeakDoctor
 
 > **Zero-dependency, SOLID-compliant Frontend Memory Leak Diagnostic Suite & Headless Web Auditor.**
 
@@ -9,21 +9,21 @@
 
 ---
 
-## 🌐 Live Demos & Links
+## Live Demos & Links
 
-* 💻 **Interactive Playground (React 19 + Vite):** [https://leak-doctor-playground.vercel.app](https://leak-doctor-playground.vercel.app)
-* 🔍 **Headless Web Scanner (Next.js + Puppeteer):** [https://leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app)
-* 🐙 **GitHub Repository:** [https://github.com/mmy-lana/leak-doctor](https://github.com/mmy-lana/leak-doctor)
+* **Interactive Playground (React 19 + Vite):** [https://leak-doctor-playground.vercel.app](https://leak-doctor-playground.vercel.app)
+* **Headless Web Scanner (Next.js + Puppeteer):** [https://leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app)
+* **GitHub Repository:** [https://github.com/mmy-lana/leak-doctor](https://github.com/mmy-lana/leak-doctor)
 
-### 📦 Official npm Packages
-* ⚡ **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)** — Core Memory Profiling Engine
-* 🛠️ **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)** — Shadow DOM Web Component Dev Widget
-* 📐 **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)** — Shared Diagnostic Schemas & Formatters
+### Official npm Packages
+* **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)** — Core Memory Profiling Engine
+* **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)** — Shadow DOM Web Component Dev Widget
+* **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)** — Shared Diagnostic Schemas & Formatters
 ---
 
-## 💡 What is LeakDoctor?
+## What is LeakDoctor?
 
-### 🗣️ In Plain English (For Non-IT Users)
+### In Plain English (For Non-IT Users)
 Imagine your browser is like a desk. Every time you open a page or click a button, new papers (data, buttons, images) are placed on the desk. Normally, when you navigate away, a clean-up worker called **Garbage Collector (GC)** throws away old papers you no longer need.
 
 However, sometimes a page "remembers" old papers and forgets to throw them away. Over time, your desk gets cluttered, making your browser **slow down, freeze, or crash**. This is called a **Memory Leak**.
@@ -32,7 +32,7 @@ However, sometimes a page "remembers" old papers and forgets to throw them away.
 
 ---
 
-### 🛠️ Technical Overview (For Engineers)
+### Technical Overview (For Engineers)
 `LeakDoctor` is a modern JavaScript monorepo engine leveraging **ES2021 `WeakRef`** and **`FinalizationRegistry`** APIs to track object lifecycle dynamics in browser runtimes. 
 
 It identifies:
@@ -42,7 +42,7 @@ It identifies:
 
 ---
 
-## 🚀 Is LeakDoctor Lightweight?
+## Is LeakDoctor Lightweight?
 
 **Yes, ultra-lightweight.**
 
@@ -55,7 +55,7 @@ It identifies:
 
 ---
 
-## 📦 Monorepo Package Architecture
+## Monorepo Package Architecture
 
 ```
 leak-doctor-monorepo/
@@ -70,9 +70,9 @@ leak-doctor-monorepo/
 
 ### Official Packages
 
-* 📦 **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)**: Core JS engine for weak tracking, sample sweeps, and memory snapshotting.
-* 📦 **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)**: Self-contained Shadow DOM Web Component (`<leak-doctor-toolbar>`) for live dev diagnostics.
-* 📦 **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)**: Zero-dependency shared contracts, `formatBytes`, and severity logic.
+* **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)**: Core JS engine for weak tracking, sample sweeps, and memory snapshotting.
+* **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)**: Self-contained Shadow DOM Web Component (`<leak-doctor-toolbar>`) for live dev diagnostics.
+* **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)**: Zero-dependency shared contracts, `formatBytes`, and severity logic.
 
 ---
 
@@ -141,7 +141,7 @@ export function UserModal({ onClose }: { onClose: () => void }) {
 
 ---
 
-## 🔬 Interactive Playground & Testing Checklist
+## Interactive Playground & Testing Checklist
 
 Test memory leak detection live without setting up a local project:
 
@@ -153,7 +153,7 @@ Test memory leak detection live without setting up a local project:
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 ```bash
 # 1. Clone the repository
@@ -175,7 +175,7 @@ pnpm dev
 
 ---
 
-## 🔮 Roadmap & Future Upgrades
+## Roadmap & Future Upgrades
 
 - [ ] **Chrome DevTools Extension:** Native browser tab extension for deep heap snapshot tree diffing.
 - [ ] **CI/CD GitHub Action:** Automated memory leak assertion on Pull Requests (fail build if post-GC heap growth exceeds threshold).
@@ -184,6 +184,6 @@ pnpm dev
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the [MIT License](LICENSE). Copyright © 2026 Muhammad Maulana Yusuf.
