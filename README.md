@@ -1,189 +1,156 @@
 # LeakDoctor
 
-> **Zero-dependency, SOLID-compliant Frontend Memory Leak Diagnostic Suite & Headless Web Auditor.**
+> Real-time frontend memory leak detection using native ES2021 `WeakRef` and `FinalizationRegistry`.
 
-[![npm version](https://img.shields.io/npm/v/@leak-doctor/profiler.svg?color=38bdf8)](https://www.npmjs.com/package/@leak-doctor/profiler)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/@leak-doctor/profiler.svg?color=0284c7)](https://www.npmjs.com/package/@leak-doctor/profiler)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@leak-doctor/profiler?color=16a34a)](https://bundlephobia.com/package/@leak-doctor/profiler)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Turborepo](https://img.shields.io/badge/Monorepo-Turborepo-ef4444.svg)](https://turbo.build/repo)
-[![pnpm](https://img.shields.io/badge/Package%20Manager-pnpm-f6921e.svg)](https://pnpm.io/)
+
+Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. LeakDoctor gives you instant feedback while you develop by monitoring detached DOM nodes, retained closures, and orphaned event listeners in the background.
+
+<!-- Replace with a 5-10 second recording of the floating widget flagging a leak -->
+![LeakDoctor Demo](assets/demo.gif)
 
 ---
 
-## Live Demos & Links
+## Live Links
 
-* **Interactive Playground (React 19 + Vite):** [https://leak-doctor-playground.vercel.app](https://leak-doctor-playground.vercel.app)
-* **Headless Web Scanner (Next.js + Puppeteer):** [https://leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app)
-* **GitHub Repository:** [https://github.com/mmy-lana/leak-doctor](https://github.com/mmy-lana/leak-doctor)
-
-### Official npm Packages
-* **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)** — Core Memory Profiling Engine
-* **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)** — Shadow DOM Web Component Dev Widget
-* **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)** — Shared Diagnostic Schemas & Formatters
----
-
-## What is LeakDoctor?
-
-### In Plain English (For Non-IT Users)
-Imagine your browser is like a desk. Every time you open a page or click a button, new papers (data, buttons, images) are placed on the desk. Normally, when you navigate away, a clean-up worker called **Garbage Collector (GC)** throws away old papers you no longer need.
-
-However, sometimes a page "remembers" old papers and forgets to throw them away. Over time, your desk gets cluttered, making your browser **slow down, freeze, or crash**. This is called a **Memory Leak**.
-
-**LeakDoctor** acts like a smart digital inspector. It monitors your website while you use it, detects forgotten items clogging up memory, and alerts you before your users experience lag or browser crashes.
+* **Interactive Playground (React 19):** [leak-doctor-playground.vercel.app](https://leak-doctor-playground.vercel.app)
+* **Headless Web Scanner (Puppeteer CDP):** [leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app)
 
 ---
 
-### Technical Overview (For Engineers)
-`LeakDoctor` is a modern JavaScript monorepo engine leveraging **ES2021 `WeakRef`** and **`FinalizationRegistry`** APIs to track object lifecycle dynamics in browser runtimes. 
+## Chrome DevTools vs. LeakDoctor
 
-It identifies:
-1. **Detached DOM Nodes:** HTML elements removed from the document tree but still referenced in JavaScript state.
-2. **Uncollected Objects & Closures:** Large arrays, buffers, or scope closures retained past their expected lifespan.
-3. **Uncleared Event Listeners:** Unremoved event callbacks attached to global targets like `window` or `document`.
-
----
-
-## Is LeakDoctor Lightweight?
-
-**Yes, ultra-lightweight.**
-
-| Metric | Measurement | Why It Matters |
+| Feature | Chrome DevTools Snapshots | LeakDoctor |
 | :--- | :--- | :--- |
-| **Bundle Size** | **< 10 KB total (gzipped)** | Adds negligible load time to your development bundle. |
-| **Dependencies** | **0 External Dependencies** | Zero risk of supply-chain vulnerabilities or dependency bloat. |
-| **Runtime Overhead** | **Zero-Copy Weak References** | Uses native `WeakRef`, meaning the profiler **never** prevents Garbage Collection or causes memory leaks itself. |
-| **Production Impact** | **Dev-Only Execution** | Designed to automatically disable or tree-shake out in production builds. |
+| **Workflow** | Manual recording, multi-step diffing | Continuous in-browser background monitoring |
+| **Snapshot Size** | 50MB - 500MB per snapshot | Zero retention (uses native `WeakRef`) |
+| **Feedback Loop** | Post-mortem inspection | Real-time widget notification during interaction |
+| **Overhead** | Freezes UI thread during capture | Negligible (`< 10 KB` gzipped, dev-only) |
+| **Automation** | Complex Puppeteer scripts | Native headless scanner included |
 
 ---
 
-## Monorepo Package Architecture
+## Quickstart
 
-```
-leak-doctor-monorepo/
-├── packages/
-│   ├── profiler (@leak-doctor/profiler) # WeakRef & FinalizationRegistry core engine
-│   ├── toolbar (@leak-doctor/toolbar)   # Zero-dep Shadow DOM Web Component widget
-│   └── shared (@leak-doctor/shared)     # Formatters, diagnostic schemas & TypeScript types
-└── apps/
-    ├── playground                       # Interactive React 19 leak simulation environment
-    └── web                              # Next.js 15/16 + Puppeteer CDP automated web auditor
-```
+### 1. Install
 
-### Official Packages
-
-* **[`@leak-doctor/profiler`](https://www.npmjs.com/package/@leak-doctor/profiler)**: Core JS engine for weak tracking, sample sweeps, and memory snapshotting.
-* **[`@leak-doctor/toolbar`](https://www.npmjs.com/package/@leak-doctor/toolbar)**: Self-contained Shadow DOM Web Component (`<leak-doctor-toolbar>`) for live dev diagnostics.
-* **[`@leak-doctor/shared`](https://www.npmjs.com/package/@leak-doctor/shared)**: Zero-dependency shared contracts, `formatBytes`, and severity logic.
-
----
-
-## 📖 Step-by-Step Usage Guide
-
-### Option A: For Web Developers (Adding to Your App)
-
-#### 1. Install Packages
 ```bash
 npm install @leak-doctor/profiler @leak-doctor/toolbar
 # or
 pnpm add @leak-doctor/profiler @leak-doctor/toolbar
 ```
 
-#### 2. Import & Mount the Dev Toolbar
-In your application entry point (`main.tsx`, `index.tsx`, or `App.tsx`):
+### 2. Mount Widget (Development Only)
 
-```tsx
-import { track, trackElement } from '@leak-doctor/profiler';
+Add the Shadow DOM toolbar to your application root (e.g., `main.tsx` or `index.ts`):
+
+```typescript
 import '@leak-doctor/toolbar';
 
-// Mount toolbar during local development
 if (process.env.NODE_ENV === 'development') {
   const toolbar = document.createElement('leak-doctor-toolbar');
   document.body.appendChild(toolbar);
 }
 ```
 
-#### 3. Track Prone Components & Memory Targets
-```tsx
-import React, { useEffect, useRef } from 'react';
-import { trackElement, track } from '@leak-doctor/profiler';
+### 3. Track Suspect Targets
 
-export function UserModal({ onClose }: { onClose: () => void }) {
-  const modalRef = useRef<HTMLDivElement>(null);
+Track DOM elements or heavy in-memory state:
 
-  useEffect(() => {
-    // Register DOM element for detached leak tracking
-    if (modalRef.current) {
-      trackElement(modalRef.current, 'User Settings Modal');
-    }
+```typescript
+import { track, trackElement } from '@leak-doctor/profiler';
 
-    // Register large buffer closure
-    const dataBuffer = new Array(1000000).fill('Heavy Data');
-    track(dataBuffer, 'Modal Data Buffer');
-
-    return () => {
-      // Clean up your references here
-    };
-  }, []);
-
-  return <div ref={modalRef}>Modal Content</div>;
+// Track a DOM element for detached node leaks
+const element = document.getElementById('user-modal');
+if (element) {
+  trackElement(element, 'User Modal Component');
 }
+
+// Track memory-heavy objects or closures
+const buffer = new Array(1000000).fill('Heavy Buffer');
+track(buffer, 'Cached Payload');
 ```
 
 ---
 
-### Option B: For QA, Product Managers & Non-IT Users (No Coding Required)
+## How It Works
 
-1. Open the **Headless Web Scanner:** [https://leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app)
-2. Enter any public website URL (e.g., `https://example.com`) and click **"Run Audit"**.
-3. View the generated report:
-   * **Health Score (0 - 100):** Overall memory hygiene rating.
-   * **Retained Leak Size:** Amount of uncollected JavaScript memory leftover post-Garbage Collection.
-   * **Diagnostic Recommendations:** Actionable tips to share with your development team.
+```mermaid
+flowchart TD
+    A[Target Object / DOM Node] -->|Register| B[WeakRef Engine]
+    B -->|Subscribe| C[FinalizationRegistry]
+    A -->|Component Unmounts / Node Removed| D{Is Node in Document?}
+    D -->|Yes| E[Normal Lifecycle]
+    D -->|No, but retain count > 0| F[Flagged: Detached DOM Leak]
+    C -->|GC Collects Target| G[Cleared: Reference Safely Freed]
+    F -->|Emit Diagnostic Event| H[LeakDoctor Toolbar / CLI Reporter]
+```
 
----
-
-## Interactive Playground & Testing Checklist
-
-Test memory leak detection live without setting up a local project:
-
-1. Open [https://leak-doctor-playground.vercel.app](https://leak-doctor-playground.vercel.app).
-2. Click **"➕ Leak Detached DOM Node"** or **"⚡ Leak 10MB Object Buffer"**.
-3. Watch the bottom-right floating **LeakDoctor** widget track active references.
-4. Wait 8 seconds: the widget highlights flagged memory leaks with severity ratings (`MEDIUM`, `HIGH`, or `CRITICAL`).
-5. Click **"Release References"** and press **"Sweep"** to verify manual garbage collection clearing.
+1. **Non-Intrusive Observation:** Targets are wrapped in native `WeakRef` instances, preventing the profiler from retaining memory or delaying Garbage Collection.
+2. **Lifecycle Notifications:** `FinalizationRegistry` signals when an object is properly reclaimed by the browser engine.
+3. **Detached State Checks:** For DOM nodes, the profiler verifies `Node.isConnected`. If detached but uncollected past a configurable threshold, a leak alert is generated.
 
 ---
 
-## Local Development Setup
+## Workspace Structure
+
+| Package / App | Description | Size / Stack |
+| :--- | :--- | :--- |
+| **`@leak-doctor/profiler`** | Core tracking engine (`WeakRef`, sweep scheduler) | `< 5 KB` (gzipped), 0 deps |
+| **`@leak-doctor/toolbar`** | Web Component diagnostic HUD | `< 5 KB` (gzipped), Shadow DOM |
+| **`@leak-doctor/shared`** | Shared TypeScript contracts and formatters | Zero runtime overhead |
+| **`apps/playground`** | Interactive leak simulator and testbed | React 19, Vite |
+| **`apps/web`** | Automated URL auditor using Chrome DevTools Protocol | Next.js, Puppeteer |
+
+---
+
+## Headless Auditing (CLI / Web)
+
+Test public URLs without modifying client code via the headless auditor:
+
+1. Navigate to [leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app).
+2. Enter the target URL and execute an audit.
+3. Inspect the report:
+   * **Health Score (0-100):** Memory hygiene evaluation.
+   * **Retained Size:** Byte volume uncollected post-forced GC.
+   * **DOM Detachments:** Total disconnected nodes retained in memory.
+
+---
+
+## Local Development
 
 ```bash
-# 1. Clone the repository
+# Clone repository
 git clone https://github.com/mmy-lana/leak-doctor.git
 cd leak-doctor
 
-# 2. Install dependencies across workspace
+# Install dependencies
 pnpm install
 
-# 3. Build shared packages
+# Build all packages
 pnpm build
 
-# 4. Start concurrent development servers
+# Run playground and web auditor concurrently
 pnpm dev
 ```
 
 * **Playground:** `http://localhost:5173`
-* **Web Scanner:** `http://localhost:3000`
+* **Web Auditor:** `http://localhost:3000`
 
 ---
 
-## Roadmap & Future Upgrades
+## Roadmap
 
-- [ ] **Chrome DevTools Extension:** Native browser tab extension for deep heap snapshot tree diffing.
-- [ ] **CI/CD GitHub Action:** Automated memory leak assertion on Pull Requests (fail build if post-GC heap growth exceeds threshold).
-- [ ] **Heap Retainment Path Analyzer:** Graphical visualizer illustrating strong reference retainer chains.
-- [ ] **Framework Adapters:** Dedicated React Hooks (`useLeakDoctor`), Vue directives (`v-track-leak`), and Angular decorators.
+- [ ] Chrome DevTools panel extension
+- [ ] Automated PR CI/CD assertion action (fail build on heap expansion)
+- [ ] Graphical retainer tree path visualizer
+- [ ] React hook wrapper (`useLeakDoctor`)
 
 ---
 
 ## License
 
-Distributed under the [MIT License](LICENSE). Copyright © 2026 Muhammad Maulana Yusuf.
+Distributed under the [MIT License](LICENSE).
