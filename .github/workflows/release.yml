@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -33,7 +34,9 @@ jobs:
         run: pnpm build
 
       - name: Publish to npm
-        run: pnpm -r publish --access public --no-git-checks
+        run: |
+          pnpm config set //registry.npmjs.org/:_authToken "${NPM_TOKEN}"
+          pnpm -r publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
