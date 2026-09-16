@@ -1,5 +1,7 @@
-import { leakDoctor } from '@leak-doctor/profiler';
+import { leakDoctor, track, trackElement } from '@leak-doctor/profiler';
 import { formatBytes, formatDurationMs, LeakReport, MemorySnapshot } from '@leak-doctor/shared';
+
+export { leakDoctor, track, trackElement };
 
 export class LeakDoctorToolbar extends HTMLElement {
   private root: ShadowRoot;

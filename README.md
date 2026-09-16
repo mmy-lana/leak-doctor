@@ -38,10 +38,12 @@ Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. Le
 ### 1. Install
 
 ```bash
-npm install @leak-doctor/profiler @leak-doctor/toolbar
+npm install -D @leak-doctor/toolbar
 # or
-pnpm add @leak-doctor/profiler @leak-doctor/toolbar
+pnpm add -D @leak-doctor/toolbar
 ```
+
+*(Optional: use `@leak-doctor/profiler` instead if you only require headless tracking without the UI widget).*
 
 ### 2. Mount Widget (Development Only)
 
@@ -61,7 +63,7 @@ if (process.env.NODE_ENV === 'development') {
 Track DOM elements or heavy in-memory state:
 
 ```typescript
-import { track, trackElement } from '@leak-doctor/profiler';
+import { track, trackElement } from '@leak-doctor/toolbar';
 
 // Track a DOM element for detached node leaks
 const element = document.getElementById('user-modal');
