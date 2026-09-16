@@ -90,9 +90,9 @@ const App: React.FC = () => {
     <div style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif', maxWidth: '800px', margin: '0 auto', color: '#f8fafc', backgroundColor: '#0f172a', borderRadius: '12px', minHeight: '80vh' }}>
       <header style={{ borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '2rem' }}>
         <h1 style={{ color: '#38bdf8', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" stroke-width="1.8" />
+            <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" strokeWidth={1.8} />
           </svg>
           LeakDoctor Playground
         </h1>

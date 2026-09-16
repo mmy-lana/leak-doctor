@@ -61,9 +61,9 @@ export default function DiagnosticDashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                  <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" stroke-width="1.8" />
+                  <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" strokeWidth={1.8} />
                 </svg>
                 LeakDoctor Web Scanner
               </h1>
@@ -168,6 +168,60 @@ export default function DiagnosticDashboard() {
             </div>
           )}
         </form>
+
+        <style>{`
+          @keyframes ld-pulse-progress {
+            0% { left: -30%; width: 30%; }
+            50% { left: 40%; width: 50%; }
+            100% { left: 100%; width: 30%; }
+          }
+          @keyframes ld-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+
+        {loading && (
+          <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b', padding: '2rem', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#38bdf8"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ animation: 'ld-spin 1s linear infinite' }}
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1.05rem' }}>
+                Executing Headless Memory Audit...
+              </div>
+            </div>
+
+            <div style={{ height: '4px', width: '100%', backgroundColor: '#1e293b', borderRadius: '2px', overflow: 'hidden', position: 'relative', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  height: '100%',
+                  backgroundColor: '#38bdf8',
+                  borderRadius: '2px',
+                  animation: 'ld-pulse-progress 1.6s ease-in-out infinite',
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.8rem', color: '#64748b' }}>
+              <div>[1] Spawning Chromium CDP session</div>
+              <div>[2] Capturing baseline post-GC snapshot</div>
+              <div>[3] Executing interaction simulation</div>
+              <div>[4] Auditing retained heap growth</div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div style={{ padding: '1rem', borderRadius: '8px', backgroundColor: '#7f1d1d', color: '#fecaca', marginBottom: '2rem' }}>
