@@ -12,6 +12,11 @@ export default function DiagnosticDashboard() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [interactions, setInteractions] = useState<InteractionRule[]>([]);
 
+  React.useEffect(() => {
+    // Purge any previously cached URL so the input starts blank
+    localStorage.removeItem('ld_scan_url');
+  }, []);
+
   const addRule = () => {
     setInteractions((prev) => [...prev, { type: 'text', value: '' }]);
   };
@@ -96,6 +101,7 @@ export default function DiagnosticDashboard() {
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              autoComplete="off"
               placeholder="https://example.com"
               required
               style={{ flex: 1, padding: '1rem', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#fff', fontSize: '1rem' }}
