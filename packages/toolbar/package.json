@@ -1,6 +1,6 @@
 {
   "name": "@leak-doctor/toolbar",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Zero-dependency Shadow DOM Web Component widget for live browser memory diagnostics.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

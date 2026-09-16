@@ -1,6 +1,6 @@
 {
   "name": "@leak-doctor/shared",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zero-dependency shared memory diagnostic schemas, contracts, and formatters for leak-doctor.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -13,7 +13,12 @@
   "bugs": {
     "url": "https://github.com/mmy-lana/leak-doctor/issues"
   },
-  "keywords": ["leak-doctor", "shared-types", "memory-schemas", "performance-formatters"],
+  "keywords": [
+    "leak-doctor",
+    "shared-types",
+    "memory-schemas",
+    "performance-formatters"
+  ],
   "exports": {
     ".": {
       "types": "./src/index.ts",
