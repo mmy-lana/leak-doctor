@@ -1,7 +1,5 @@
 <p align="center">
-  <picture>
-    <img src="assets/banner.svg" alt="LeakDoctor Banner" width="100%">
-  </picture>
+  <img src="./assets/banner.svg" alt="LeakDoctor Banner" width="100%">
 </p>
 
 <p align="center">
@@ -12,14 +10,6 @@
 </p>
 
 Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. LeakDoctor gives you instant feedback while you develop by monitoring detached DOM nodes, retained closures, and orphaned event listeners in the background.
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@leak-doctor/profiler?color=16a34a)](https://bundlephobia.com/package/@leak-doctor/profiler)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Turborepo](https://img.shields.io/badge/Monorepo-Turborepo-ef4444.svg)](https://turbo.build/repo)
-
-Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. LeakDoctor gives you instant feedback while you develop by monitoring detached DOM nodes, retained closures, and orphaned event listeners in the background.
-
-<!-- Replace with a 5-10 second recording of the floating widget flagging a leak -->
-![LeakDoctor Demo](assets/demo.gif)
 
 ---
 
