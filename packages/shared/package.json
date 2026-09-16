@@ -1,6 +1,6 @@
 {
   "name": "@leak-doctor/shared",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Zero-dependency shared memory diagnostic schemas, contracts, and formatters for leak-doctor.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
