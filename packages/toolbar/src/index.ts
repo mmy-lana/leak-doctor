@@ -39,7 +39,14 @@ export class LeakDoctorToolbar extends HTMLElement {
     const heapBar = this.root.querySelector('#ld-heap-bar') as HTMLElement;
     const trackerVal = this.root.querySelector('#ld-tracker-val');
 
-    if (heapVal) heapVal.textContent = formatBytes(snapshot.usedHeapBytes);
+    if (heapVal) {
+      heapVal.textContent = snapshot.usedHeapBytes > 0 
+        ? formatBytes(snapshot.usedHeapBytes) 
+        : 'N/A (Chromium)';
+      if (snapshot.usedHeapBytes === 0) {
+        heapVal.setAttribute('title', 'window.performance.memory is only supported in Chromium browsers');
+      }
+    }
     if (trackerVal) trackerVal.textContent = snapshot.activeTrackersCount.toString();
 
     if (heapBar && snapshot.heapLimitBytes > 0) {
