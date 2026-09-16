@@ -60,7 +60,13 @@ export default function DiagnosticDashboard() {
         <header style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem', borderBottom: '1px solid #1e293b', paddingBottom: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', margin: 0 }}>⚡ LeakDoctor Web Scanner</h1>
+              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                  <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" stroke-width="1.8" />
+                </svg>
+                LeakDoctor Web Scanner
+              </h1>
               <p style={{ color: '#94a3b8', fontSize: '1.1rem', margin: '0.5rem 0 0 0' }}>Headless Chromium DOM & JS Heap Memory Leak Audit</p>
             </div>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -70,7 +76,7 @@ export default function DiagnosticDashboard() {
                 rel="noopener noreferrer"
                 style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#e2e8f0', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
               >
-                🐙 GitHub Repo
+                GitHub Repo
               </a>
               <a
                 href="https://leak-doctor-playground.vercel.app"
@@ -78,7 +84,7 @@ export default function DiagnosticDashboard() {
                 rel="noopener noreferrer"
                 style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
               >
-                🧪 Playground
+                Playground
               </a>
             </div>
           </div>
@@ -109,7 +115,7 @@ export default function DiagnosticDashboard() {
               onClick={() => setShowAdvanced(!showAdvanced)}
               style={{ background: 'transparent', border: 'none', color: '#38bdf8', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600, padding: 0 }}
             >
-              ⚙️ {showAdvanced ? 'Hide Advanced Interaction Rules' : 'Add Custom Interaction Rules (Button Text / CSS / XPath)'}
+              {showAdvanced ? '[ - ] Hide Advanced Interaction Rules' : '[ + ] Add Custom Interaction Rules (Button Text / CSS / XPath)'}
             </button>
           </div>
 
@@ -165,7 +171,7 @@ export default function DiagnosticDashboard() {
 
         {error && (
           <div style={{ padding: '1rem', borderRadius: '8px', backgroundColor: '#7f1d1d', color: '#fecaca', marginBottom: '2rem' }}>
-            🚨 {error}
+            [ERROR] {error}
           </div>
         )}
 
@@ -239,7 +245,7 @@ export default function DiagnosticDashboard() {
                   {scanResult.formattedInteractiveLeakedBytes}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#cbd5e1', wordBreak: 'break-word', backgroundColor: '#0f172a', padding: '0.5rem', borderRadius: '4px' }}>
-                  ⚡ {scanResult.actionTestedDescription}
+                  Target: {scanResult.actionTestedDescription}
                 </div>
               </div>
             </div>
@@ -249,7 +255,7 @@ export default function DiagnosticDashboard() {
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {scanResult.recommendations.map((rec, i) => (
                   <li key={i} style={{ padding: '0.75rem', backgroundColor: '#1e293b', borderRadius: '6px', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#e2e8f0' }}>
-                    💡 {rec}
+                    * {rec}
                   </li>
                 ))}
               </ul>

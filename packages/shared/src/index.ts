@@ -122,10 +122,10 @@ export class SharedLogger {
   }
 
   static warn(message: string, ...args: unknown[]): void {
-    console.warn(`\x1b[33m${this.PREFIX} ⚠️\x1b[0m ${message}`, ...args);
+    console.warn(`\x1b[33m${this.PREFIX} [WARN]\x1b[0m ${message}`, ...args);
   }
 
   static error(message: string, ...args: unknown[]): void {
-    console.error(`\x1b[31m${this.PREFIX} 🚨\x1b[0m ${message}`, ...args);
+    console.error(`\x1b[31m${this.PREFIX} [ERROR]\x1b[0m ${message}`, ...args);
   }
 }

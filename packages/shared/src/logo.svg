@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="logo-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="logo-droplet-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.04" />
+    </linearGradient>
+    <filter id="logo-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <circle cx="120" cy="120" r="70" fill="#0284c7" opacity="0.15" filter="url(#logo-glow)" />
+  <circle cx="120" cy="120" r="92" fill="none" stroke="url(#logo-brand-grad)" stroke-width="2" stroke-dasharray="8 6 18 6" opacity="0.35" />
+  <circle cx="120" cy="120" r="82" fill="none" stroke="#334155" stroke-width="1.5" />
+
+  <path d="M 120 42 C 152 82, 182 118, 182 150 A 62 62 0 0 1 58 150 C 58 118, 88 82, 120 42 Z" 
+        fill="url(#logo-droplet-fill)" 
+        stroke="url(#logo-brand-grad)" 
+        stroke-width="3.5" 
+        stroke-linejoin="round" />
+
+  <path d="M 72 138 L 94 138 L 104 118 L 116 158 L 128 108 L 138 146 L 146 138 L 168 138" 
+        fill="none" 
+        stroke="url(#logo-brand-grad)" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <circle cx="128" cy="108" r="5.5" fill="#38bdf8" stroke="#0b1329" stroke-width="2" />
+  <circle cx="116" cy="158" r="5.5" fill="#10b981" stroke="#0b1329" stroke-width="2" />
+  <circle cx="104" cy="118" r="4" fill="#38bdf8" />
+  <circle cx="168" cy="138" r="4" fill="#10b981" />
+
+  <g transform="translate(154, 80)">
+    <circle cx="0" cy="0" r="9" fill="#0f172a" stroke="#ef4444" stroke-width="2" />
+    <circle cx="0" cy="0" r="3.5" fill="#ef4444" />
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.6" stroke-dasharray="3 3" />
+  </g>
+</svg>

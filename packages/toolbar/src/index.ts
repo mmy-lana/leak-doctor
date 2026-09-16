@@ -125,8 +125,12 @@ export class LeakDoctorToolbar extends HTMLElement {
         .ld-brand {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
           color: #38bdf8;
+        }
+        .ld-brand svg {
+          width: 16px;
+          height: 16px;
         }
         .ld-toggle-btn {
           background: transparent;
@@ -253,7 +257,13 @@ export class LeakDoctorToolbar extends HTMLElement {
       </style>
       <div class="ld-container">
         <div class="ld-header">
-          <div class="ld-brand">⚡ LeakDoctor</div>
+          <div class="ld-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+              <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" stroke-width="1.8" />
+            </svg>
+            LeakDoctor
+          </div>
           <button class="ld-toggle-btn" id="ld-toggle">−</button>
         </div>
         <div class="ld-body">

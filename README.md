@@ -1,8 +1,17 @@
-# LeakDoctor
+<p align="center">
+  <picture>
+    <img src="assets/banner.svg" alt="LeakDoctor Banner" width="100%">
+  </picture>
+</p>
 
-> Real-time frontend memory leak detection using native ES2021 `WeakRef` and `FinalizationRegistry`.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@leak-doctor/toolbar"><img src="https://img.shields.io/npm/v/@leak-doctor/toolbar.svg?color=0284c7" alt="npm version"></a>
+  <a href="https://bundlephobia.com/package/@leak-doctor/toolbar"><img src="https://img.shields.io/bundlephobia/minzip/@leak-doctor/toolbar?color=16a34a" alt="Bundle Size"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://turbo.build/repo"><img src="https://img.shields.io/badge/Monorepo-Turborepo-ef4444.svg" alt="Turborepo"></a>
+</p>
 
-[![npm version](https://img.shields.io/npm/v/@leak-doctor/profiler.svg?color=0284c7)](https://www.npmjs.com/package/@leak-doctor/profiler)
+Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. LeakDoctor gives you instant feedback while you develop by monitoring detached DOM nodes, retained closures, and orphaned event listeners in the background.
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@leak-doctor/profiler?color=16a34a)](https://bundlephobia.com/package/@leak-doctor/profiler)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Turborepo](https://img.shields.io/badge/Monorepo-Turborepo-ef4444.svg)](https://turbo.build/repo)

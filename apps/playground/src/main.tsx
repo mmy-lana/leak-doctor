@@ -89,7 +89,13 @@ const App: React.FC = () => {
   return (
     <div style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif', maxWidth: '800px', margin: '0 auto', color: '#f8fafc', backgroundColor: '#0f172a', borderRadius: '12px', minHeight: '80vh' }}>
       <header style={{ borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '2rem' }}>
-        <h1 style={{ color: '#38bdf8', margin: '0 0 0.5rem 0' }}>⚡ LeakDoctor Playground</h1>
+        <h1 style={{ color: '#38bdf8', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+            <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" stroke-width="1.8" />
+          </svg>
+          LeakDoctor Playground
+        </h1>
         <p style={{ color: '#94a3b8', margin: 0 }}>Interactive frontend memory leak testbed environment.</p>
       </header>
 
@@ -98,21 +104,21 @@ const App: React.FC = () => {
           onClick={simulateDetachedDomLeak}
           style={{ padding: '0.75rem 1rem', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
         >
-          ➕ Leak Detached DOM Node
+          Leak Detached DOM Node
         </button>
 
         <button
           onClick={simulateClosureBufferLeak}
           style={{ padding: '0.75rem 1rem', background: '#d97706', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
         >
-          ⚡ Leak 10MB Object Buffer
+          Leak 10MB Object Buffer
         </button>
 
         <button
           onClick={simulateEventListenerLeak}
           style={{ padding: '0.75rem 1rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
         >
-          🎧 Leak Window Listener
+          Leak Window Listener
         </button>
       </div>
 
