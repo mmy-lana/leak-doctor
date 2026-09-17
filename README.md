@@ -11,6 +11,10 @@
 
 Chrome DevTools heap snapshots are heavy, manual, and difficult to interpret. LeakDoctor gives you instant feedback while you develop by monitoring detached DOM nodes, retained closures, and orphaned event listeners in the background.
 
+<p align="center">
+  <img src="./assets/demo.gif" alt="LeakDoctor Interactive Demo" width="650">
+</p>
+
 ---
 
 ## Live Links
