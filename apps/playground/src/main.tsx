@@ -63,7 +63,7 @@ const App: React.FC = () => {
       created: Date.now(),
     };
 
-    const trackId = track(closureObj, '10MB Array Closure Leak', { category: 'Simulated Object' });
+    const trackId = track(closureObj, '10MB Array Closure Leak', { category: 'Simulated Object', expectFreed: true });
 
     setLeakedRefs((prev) => [...prev, { id: trackId, type: 'Large Object Buffer', data: closureObj }]);
   };
@@ -75,7 +75,7 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('resize', leakHandler);
-    const trackId = track(leakHandler, 'Unremoved Window Resize Listener');
+    const trackId = track(leakHandler, 'Unremoved Window Resize Listener', { expectFreed: true });
 
     setLeakedRefs((prev) => [...prev, { id: trackId, type: 'Event Listener Closure', data: leakHandler }]);
   };
@@ -102,14 +102,14 @@ const App: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <button
           onClick={simulateDetachedDomLeak}
-          style={{ padding: '0.75rem 1rem', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+          style={{ padding: '0.75rem 1rem', background: '#0369a1', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
         >
           Leak Detached DOM Node
         </button>
 
         <button
           onClick={simulateClosureBufferLeak}
-          style={{ padding: '0.75rem 1rem', background: '#d97706', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+          style={{ padding: '0.75rem 1rem', background: '#b45309', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
         >
           Leak 10MB Object Buffer
         </button>
@@ -127,20 +127,20 @@ const App: React.FC = () => {
           <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Simulated Retained References ({leakedRefs.length})</h2>
           <button
             onClick={releaseAllLeaks}
-            style={{ padding: '0.5rem 1rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+            style={{ padding: '0.5rem 1rem', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
           >
             Release References
           </button>
         </div>
 
         {leakedRefs.length === 0 ? (
-          <p style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', padding: '1rem 0' }}>No active leaked references in JS state.</p>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', textAlign: 'center', padding: '1rem 0' }}>No active leaked references in JS state.</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {leakedRefs.map((item, idx) => (
               <li key={idx} style={{ padding: '0.5rem 0.75rem', background: '#0f172a', borderRadius: '4px', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                 <span style={{ color: '#f1f5f9', fontWeight: 500 }}>{item.type}</span>
-                <span style={{ color: '#64748b', fontFamily: 'monospace' }}>{item.id}</span>
+                <span style={{ color: '#94a3b8', fontFamily: 'monospace' }}>{item.id}</span>
               </li>
             ))}
           </ul>

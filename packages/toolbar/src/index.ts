@@ -6,10 +6,14 @@ export { leakDoctor, track, trackElement };
 export class LeakDoctorToolbar extends HTMLElement {
   private root: ShadowRoot;
   private isMinimized: boolean = false;
+  private boundSnapshot: (snapshot: MemorySnapshot) => void;
+  private boundUpdateReports: () => void;
 
   constructor() {
     super();
     this.root = this.attachShadow({ mode: 'open' });
+    this.boundSnapshot = (snapshot: MemorySnapshot) => this.updateSnapshot(snapshot);
+    this.boundUpdateReports = () => this.updateReports();
   }
 
   connectedCallback(): void {
@@ -18,10 +22,22 @@ export class LeakDoctorToolbar extends HTMLElement {
     leakDoctor.start({ autoStart: true });
   }
 
+  disconnectedCallback(): void {
+    // BUG-004: release the singleton listeners and stop the sweep timer when the
+    // widget is removed, so re-mounts do not duplicate handlers and a detached
+    // toolbar is not retained by the engine's listener registry.
+    leakDoctor.off<MemorySnapshot>('snapshot', this.boundSnapshot);
+    leakDoctor.off('leak', this.boundUpdateReports);
+    leakDoctor.off('clear', this.boundUpdateReports);
+    if (!document.querySelector('leak-doctor-toolbar')) {
+      leakDoctor.stop();
+    }
+  }
+
   private attachEventListeners(): void {
-    leakDoctor.on<MemorySnapshot>('snapshot', (snapshot: MemorySnapshot) => this.updateSnapshot(snapshot));
-    leakDoctor.on('leak', () => this.updateReports());
-    leakDoctor.on('clear', () => this.updateReports());
+    leakDoctor.on<MemorySnapshot>('snapshot', this.boundSnapshot);
+    leakDoctor.on('leak', this.boundUpdateReports);
+    leakDoctor.on('clear', this.boundUpdateReports);
   }
 
   private toggleMinimize(): void {
@@ -113,6 +129,7 @@ export class LeakDoctorToolbar extends HTMLElement {
         }
         .ld-container {
           width: 320px;
+          max-width: calc(100vw - 40px);
           background: rgba(15, 23, 42, 0.92);
           backdrop-filter: blur(8px);
           border: 1px solid #334155;
@@ -145,7 +162,9 @@ export class LeakDoctorToolbar extends HTMLElement {
           color: #94a3b8;
           font-size: 16px;
           cursor: pointer;
-          padding: 0 4px;
+          padding: 6px 8px;
+          min-width: 24px;
+          min-height: 24px;
         }
         .ld-body {
           padding: 12px;
@@ -163,7 +182,7 @@ export class LeakDoctorToolbar extends HTMLElement {
           border: 1px solid #1e293b;
         }
         .ld-stat-label {
-          color: #64748b;
+          color: #94a3b8;
           font-size: 10px;
           text-transform: uppercase;
         }
@@ -203,7 +222,7 @@ export class LeakDoctorToolbar extends HTMLElement {
         }
         .ld-empty {
           text-align: center;
-          color: #64748b;
+          color: #94a3b8;
           padding: 12px;
         }
         .ld-report-card {
@@ -239,7 +258,7 @@ export class LeakDoctorToolbar extends HTMLElement {
         }
         .ld-card-type {
           font-size: 10px;
-          color: #64748b;
+          color: #94a3b8;
           margin-top: 2px;
         }
         .ld-actions {
@@ -260,6 +279,12 @@ export class LeakDoctorToolbar extends HTMLElement {
         }
         .ld-btn:hover {
           background: #475569;
+        }
+        /* A11Y-005: honor reduced-motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+          .ld-progress-fill {
+            transition: none;
+          }
         }
       </style>
       <div class="ld-container">
@@ -308,7 +333,7 @@ export class LeakDoctorToolbar extends HTMLElement {
   public static mount(): void {
     if (typeof window !== 'undefined' && typeof customElements !== 'undefined') {
       if (!customElements.get('leak-doctor-toolbar')) {
-        customElements.define('leak-doctor-toolbar', LeakDoctorDoctorToolbarHost);
+        customElements.define('leak-doctor-toolbar', LeakDoctorToolbar);
       }
       if (!document.querySelector('leak-doctor-toolbar')) {
         const el = document.createElement('leak-doctor-toolbar');
@@ -317,8 +342,6 @@ export class LeakDoctorToolbar extends HTMLElement {
     }
   }
 }
-
-class LeakDoctorDoctorToolbarHost extends LeakDoctorToolbar {}
 
 if (typeof window !== 'undefined' && typeof customElements !== 'undefined') {
   if (!customElements.get('leak-doctor-toolbar')) {

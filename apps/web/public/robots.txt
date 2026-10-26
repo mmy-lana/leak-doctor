@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://leak-doctor-web.vercel.app/sitemap.xml

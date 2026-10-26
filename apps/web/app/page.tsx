@@ -43,12 +43,17 @@ export default function DiagnosticDashboard() {
       const res = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, interactions: interactions.filter((i) => i.value.trim().length > 0) }),
+        body: JSON.stringify({
+          url,
+          interactions: interactions.filter((i) => i.value.trim().length > 0),
+          autoClick: true,
+        }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Diagnostic scan failed.');
+        const ref = data.requestId ? ` (ref: ${data.requestId})` : '';
+        throw new Error(`${data.error || 'Diagnostic scan failed.'}${ref}`);
       }
 
       setScanResult(data);
@@ -60,34 +65,34 @@ export default function DiagnosticDashboard() {
   };
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: '#090d16', color: '#f1f5f9', fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <header style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem', borderBottom: '1px solid #1e293b', paddingBottom: '1.5rem' }}>
+    <main style={{ minHeight: '100vh', backgroundColor: '#090a0f', color: '#f4f4f5', fontFamily: 'system-ui, -apple-system, sans-serif', padding: '2rem 1.5rem' }}>
+      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+        <header style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem', borderBottom: '1px solid #1e2029', paddingBottom: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38bdf8', margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <h1 style={{ fontSize: 'clamp(1.4rem, 5vw, 2.1rem)', fontWeight: 700, color: '#f4f4f5', margin: 0, display: 'flex', alignItems: 'center', gap: '12px', letterSpacing: '-0.02em', minWidth: 0 }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                  <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#10b981" strokeWidth={1.8} />
+                  <path d="M8 14h2l2-4 2 6 2-2h2" stroke="#34d399" strokeWidth={1.8} />
                 </svg>
-                LeakDoctor Web Scanner
+                LeakDoctor Scanner
               </h1>
-              <p style={{ color: '#94a3b8', fontSize: '1.1rem', margin: '0.5rem 0 0 0' }}>Headless Chromium DOM & JS Heap Memory Leak Audit</p>
+              <p style={{ color: '#9ca3af', fontSize: '0.95rem', margin: '0.35rem 0 0 0' }}>Headless Chromium DOM & JS heap memory diagnostics</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <a
                 href="https://github.com/mmy-lana/leak-doctor"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#e2e8f0', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
+                style={{ padding: '0.45rem 0.85rem', backgroundColor: '#13151f', border: '1px solid #232634', borderRadius: '6px', color: '#d4d4d8', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 500 }}
               >
-                GitHub Repo
+                GitHub
               </a>
               <a
                 href="https://leak-doctor-playground.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ padding: '0.5rem 1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
+                style={{ padding: '0.45rem 0.85rem', backgroundColor: '#13151f', border: '1px solid #232634', borderRadius: '6px', color: '#93c5fd', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 500 }}
               >
                 Playground
               </a>
@@ -95,23 +100,24 @@ export default function DiagnosticDashboard() {
           </div>
         </header>
 
-        <form onSubmit={handleScan} style={{ marginBottom: '2.5rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <form onSubmit={handleScan} style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               autoComplete="off"
               placeholder="https://example.com"
+              aria-label="URL to audit"
               required
-              style={{ flex: 1, padding: '1rem', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#fff', fontSize: '1rem' }}
+              style={{ flex: 1, minWidth: '240px', padding: '0.75rem 1rem', borderRadius: '6px', border: '1px solid #272a38', backgroundColor: '#11131c', color: '#f4f4f5', fontSize: '0.95rem', outline: 'none' }}
             />
             <button
               type="submit"
               disabled={loading}
-              style={{ padding: '1rem 2rem', borderRadius: '8px', border: 'none', backgroundColor: loading ? '#475569' : '#0284c7', color: '#fff', fontSize: '1rem', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}
+              style={{ padding: '0.75rem 1.5rem', borderRadius: '6px', border: '1px solid #3b82f6', backgroundColor: loading ? '#1f2430' : '#2563eb', color: '#ffffff', fontSize: '0.9rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer' }}
             >
-              {loading ? 'Auditing Heap...' : 'Run Audit'}
+              {loading ? 'Auditing...' : 'Run Audit'}
             </button>
           </div>
 
@@ -119,54 +125,56 @@ export default function DiagnosticDashboard() {
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              style={{ background: 'transparent', border: 'none', color: '#38bdf8', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+              style={{ background: 'transparent', border: 'none', color: '#93c5fd', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 500, padding: '4px 0' }}
             >
-              {showAdvanced ? '[ - ] Hide Advanced Interaction Rules' : '[ + ] Add Custom Interaction Rules (Button Text / CSS / XPath)'}
+              {showAdvanced ? 'Hide Custom Interaction Steps' : 'Add Custom Interaction Steps (Optional)'}
             </button>
           </div>
 
           {showAdvanced && (
-            <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #1e293b' }}>
+            <div style={{ marginTop: '0.75rem', padding: '1rem', backgroundColor: '#11131c', borderRadius: '6px', border: '1px solid #1e2029' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>AUTOMATED BUTTON CLICK RULES</span>
+                <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>CUSTOM INTERACTION STEPS</span>
                 <button
                   type="button"
                   onClick={addRule}
-                  style={{ padding: '0.25rem 0.75rem', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                  style={{ padding: '0.25rem 0.6rem', backgroundColor: '#1e2230', color: '#f4f4f5', border: '1px solid #2e3344', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
                 >
                   + Add Step
                 </button>
               </div>
 
               {interactions.length === 0 ? (
-                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>No custom rules added. Smart auto-clicker will execute by default.</p>
+                <p style={{ fontSize: '0.8rem', color: '#9ca3af', margin: 0 }}>No custom rules configured. By default, the scanner discovers and tests 3-5 visible buttons and interactive elements automatically.</p>
               ) : (
                 interactions.map((rule, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                     <select
                       value={rule.type}
                       onChange={(e) => updateRule(idx, 'type', e.target.value as InteractionRule['type'])}
-                      style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem' }}
+                      aria-label="Interaction rule type"
+                      style={{ padding: '0.45rem', borderRadius: '4px', border: '1px solid #272a38', backgroundColor: '#161824', color: '#f4f4f5', fontSize: '0.8rem' }}
                     >
-                      <option value="text">Button Text (e.g. Fast traffic)</option>
-                      <option value="selector">CSS Selector (e.g. button.high-traffic)</option>
-                      <option value="xpath">XPath (e.g. /html/body/div[1]/button[1])</option>
+                      <option value="text">Button Text</option>
+                      <option value="selector">CSS Selector</option>
+                      <option value="xpath">XPath</option>
                     </select>
 
                     <input
                       type="text"
                       value={rule.value}
                       onChange={(e) => updateRule(idx, 'value', e.target.value)}
-                      placeholder={rule.type === 'text' ? 'Fast traffic' : rule.type === 'selector' ? 'button.high-traffic' : '/html/body/div[1]/button[1]'}
-                      style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem' }}
+                      placeholder={rule.type === 'text' ? 'e.g. Load More' : rule.type === 'selector' ? 'button.primary' : '//button[1]'}
+                      aria-label="Interaction rule value"
+                      style={{ flex: 1, padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid #272a38', backgroundColor: '#161824', color: '#f4f4f5', fontSize: '0.8rem' }}
                     />
 
                     <button
                       type="button"
                       onClick={() => removeRule(idx)}
-                      style={{ padding: '0.5rem 0.75rem', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                      style={{ padding: '0.45rem 0.75rem', backgroundColor: '#2d181b', border: '1px solid #4a1d24', color: '#fca5a5', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
                     >
-                      ✕
+                      Remove
                     </button>
                   </div>
                 ))
@@ -185,17 +193,24 @@ export default function DiagnosticDashboard() {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
           }
+          @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
         `}</style>
 
         {loading && (
-          <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b', padding: '2rem', marginBottom: '2.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+          <div role="status" aria-live="polite" style={{ backgroundColor: '#11131c', borderRadius: '8px', border: '1px solid #1e2029', padding: '1.5rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
               <svg
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#38bdf8"
+                stroke="#60a5fa"
                 strokeWidth={2.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -203,41 +218,41 @@ export default function DiagnosticDashboard() {
               >
                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
               </svg>
-              <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1.05rem' }}>
-                Executing Headless Memory Audit...
+              <div style={{ fontWeight: 600, color: '#f4f4f5', fontSize: '0.95rem' }}>
+                Executing Headless Memory Audit
               </div>
             </div>
 
-            <div style={{ height: '4px', width: '100%', backgroundColor: '#1e293b', borderRadius: '2px', overflow: 'hidden', position: 'relative', marginBottom: '1.25rem' }}>
+            <div style={{ height: '3px', width: '100%', backgroundColor: '#1b1e2a', borderRadius: '2px', overflow: 'hidden', position: 'relative', marginBottom: '1rem' }}>
               <div
                 style={{
                   position: 'absolute',
                   height: '100%',
-                  backgroundColor: '#38bdf8',
+                  backgroundColor: '#3b82f6',
                   borderRadius: '2px',
                   animation: 'ld-pulse-progress 1.6s ease-in-out infinite',
                 }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.8rem', color: '#64748b' }}>
-              <div>[1] Spawning Chromium CDP session</div>
-              <div>[2] Capturing baseline post-GC snapshot</div>
-              <div>[3] Executing interaction simulation</div>
-              <div>[4] Auditing retained heap growth</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', fontSize: '0.75rem', color: '#9ca3af' }}>
+              <div>1. Headless CDP session init</div>
+              <div>2. Baseline post-GC heap snapshot</div>
+              <div>3. Triggering interactive elements</div>
+              <div>4. Post-interaction retention diff</div>
             </div>
           </div>
         )}
 
         {error && (
-          <div style={{ padding: '1rem', borderRadius: '8px', backgroundColor: '#7f1d1d', color: '#fecaca', marginBottom: '2rem' }}>
+          <div role="alert" style={{ padding: '0.85rem 1rem', borderRadius: '6px', backgroundColor: '#2d181b', border: '1px solid #4a1d24', color: '#fca5a5', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
             [ERROR] {error}
           </div>
         )}
 
         {scanResult && (
-          <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b', padding: '2rem' }}>
-<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #1e293b', paddingBottom: '1rem' }}>
+          <div role="status" aria-live="polite" style={{ backgroundColor: '#11131c', borderRadius: '8px', border: '1px solid #1e2029', padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #1e2029', paddingBottom: '0.85rem' }}>
               <div style={{ overflow: 'hidden', paddingRight: '1rem' }}>
                 <a
                   href={scanResult.url}
@@ -250,72 +265,72 @@ export default function DiagnosticDashboard() {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    color: '#38bdf8',
+                    color: '#93c5fd',
                     textDecoration: 'none',
-                    fontWeight: 700,
-                    fontSize: '1.25rem',
+                    fontWeight: 600,
+                    fontSize: '1.1rem',
                   }}
                 >
                   {scanResult.url} ↗
                 </a>
-                <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                  Scanned at {new Date(scanResult.timestamp).toLocaleTimeString()}
+                <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.2rem' }}>
+                  Audited at {new Date(scanResult.timestamp).toLocaleTimeString()}
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               {/* Audit Result 1: Passive Baseline */}
-              <div style={{ backgroundColor: '#1e293b', padding: '1.25rem', borderRadius: '8px', border: '1px solid #334155', position: 'relative' }}>
+              <div style={{ backgroundColor: '#161824', padding: '1.1rem', borderRadius: '6px', border: '1px solid #232634' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#94a3b8' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', letterSpacing: '0.03em' }}>
                     1. PASSIVE BASELINE
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: scanResult.passiveHealthScore > 80 ? '#4ade80' : '#facc15' }}>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 700, color: scanResult.passiveHealthScore > 80 ? '#4ade80' : '#facc15' }}>
                       {scanResult.passiveHealthScore}/100
                     </span>
-                    <div style={{ fontSize: '0.65rem', color: '#64748b' }}>PASSIVE SCORE</div>
+                    <div style={{ fontSize: '0.65rem', color: '#9ca3af' }}>SCORE</div>
                   </div>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>INITIAL HEAP BASELINE</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#f8fafc', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>INITIAL HEAP</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f4f4f5', marginTop: '0.2rem', marginBottom: '0.4rem' }}>
                   {scanResult.formattedPassiveLeakedBytes}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#4ade80' }}>✓ Memory footprint prior to user actions</div>
+                <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Clean memory footprint prior to interactions</div>
               </div>
 
               {/* Audit Result 2: Interactive Test */}
-              <div style={{ backgroundColor: '#1e293b', padding: '1.25rem', borderRadius: '8px', border: '1px solid #0284c7', position: 'relative' }}>
+              <div style={{ backgroundColor: '#161824', padding: '1.1rem', borderRadius: '6px', border: '1px solid #232634' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8' }}>
-                    2. INTERACTIVE LEAK AUDIT
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', letterSpacing: '0.03em' }}>
+                    2. INTERACTIVE RETENTION
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: scanResult.interactiveHealthScore > 80 ? '#4ade80' : scanResult.interactiveHealthScore > 50 ? '#facc15' : '#f87171' }}>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 700, color: scanResult.interactiveHealthScore > 80 ? '#4ade80' : scanResult.interactiveHealthScore > 50 ? '#facc15' : '#f87171' }}>
                       {scanResult.interactiveHealthScore}/100
                     </span>
-                    <div style={{ fontSize: '0.65rem', color: '#64748b' }}>LEAK SCORE</div>
+                    <div style={{ fontSize: '0.65rem', color: '#9ca3af' }}>SCORE</div>
                   </div>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>RETAINED LEAK SIZE</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: scanResult.interactiveLeakedBytes > 0 ? '#fb923c' : '#4ade80', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>RETAINED GROWTH</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: scanResult.interactiveLeakedBytes > 0 ? '#fb923c' : '#4ade80', marginTop: '0.2rem', marginBottom: '0.4rem' }}>
                   {scanResult.formattedInteractiveLeakedBytes}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#cbd5e1', wordBreak: 'break-word', backgroundColor: '#0f172a', padding: '0.5rem', borderRadius: '4px' }}>
-                  Target: {scanResult.actionTestedDescription}
+                <div style={{ fontSize: '0.75rem', color: '#cbd5e1', wordBreak: 'break-word', backgroundColor: '#0e1017', padding: '0.5rem', borderRadius: '4px', border: '1px solid #1a1c28' }}>
+                  {scanResult.actionTestedDescription}
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 style={{ fontSize: '1rem', color: '#94a3b8', marginBottom: '0.75rem' }}>DIAGNOSTIC RECOMMENDATIONS</h3>
+              <h2 style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem', fontWeight: 600, letterSpacing: '0.04em' }}>DIAGNOSTIC RECOMMENDATIONS</h2>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {scanResult.recommendations.map((rec, i) => (
-                  <li key={i} style={{ padding: '0.75rem', backgroundColor: '#1e293b', borderRadius: '6px', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#e2e8f0' }}>
-                    * {rec}
+                  <li key={i} style={{ padding: '0.65rem 0.8rem', backgroundColor: '#161824', border: '1px solid #232634', borderRadius: '4px', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#d4d4d8' }}>
+                    - {rec}
                   </li>
                 ))}
               </ul>
@@ -323,14 +338,14 @@ export default function DiagnosticDashboard() {
           </div>
         )}
 
-        <footer style={{ marginTop: '4rem', paddingTop: '1.5rem', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+        <footer style={{ marginTop: '3.5rem', paddingTop: '1.25rem', borderTop: '1px solid #1e2029', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.8rem', color: '#9ca3af' }}>
           <div>
-            Built by <a href="https://github.com/mmy-lana" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'none' }}>@mmy-lana</a>
+            Built by <a href="https://github.com/mmy-lana" target="_blank" rel="noopener noreferrer" style={{ color: '#93c5fd', textDecoration: 'none', padding: '4px 0', display: 'inline-block' }}>@mmy-lana</a>
           </div>
-          <div style={{ display: 'flex', gap: '1.25rem' }}>
-            <a href="https://www.npmjs.com/package/@leak-doctor/profiler" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/profiler</a>
-            <a href="https://www.npmjs.com/package/@leak-doctor/toolbar" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/toolbar</a>
-            <a href="https://www.npmjs.com/package/@leak-doctor/shared" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>@leak-doctor/shared</a>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <a href="https://www.npmjs.com/package/@leak-doctor/profiler" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'none', padding: '4px 0', display: 'inline-block' }}>@leak-doctor/profiler</a>
+            <a href="https://www.npmjs.com/package/@leak-doctor/toolbar" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'none', padding: '4px 0', display: 'inline-block' }}>@leak-doctor/toolbar</a>
+            <a href="https://www.npmjs.com/package/@leak-doctor/shared" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'none', padding: '4px 0', display: 'inline-block' }}>@leak-doctor/shared</a>
           </div>
         </footer>
       </div>

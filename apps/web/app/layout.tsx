@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://leak-doctor-web.vercel.app'),
   title: 'leak-doctor — JavaScript Memory Leak & Detached DOM Auditor',
   description: 'Zero-dependency frontend memory leak diagnostic suite and headless Chromium DOM & JS heap auditor leveraging WeakRef and FinalizationRegistry.',
   keywords: [
@@ -17,6 +18,12 @@ export const metadata: Metadata = {
   authors: [{ name: 'Muhammad Maulana Yusuf', url: 'https://github.com/mmy-lana' }],
   verification: {
     google: 'kHFv2qyOjv4Th7trKaPXsJom5ZKq5zYf_pZpdXYvA58',
+  },
+  alternates: {
+    canonical: 'https://leak-doctor-web.vercel.app/',
+  },
+  icons: {
+    icon: '/favicon.ico',
   },
   openGraph: {
     title: 'leak-doctor — JavaScript Memory Leak & Detached DOM Auditor',
@@ -39,9 +46,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="google-site-verification" content="kHFv2qyOjv4Th7trKaPXsJom5ZKq5zYf_pZpdXYvA58" />
-      </head>
+      {/* SEO-002: google-site-verification is emitted once by metadata.verification above —
+          do not add a manual copy here (it rendered as a duplicate tag). */}
       <body style={{ margin: 0, padding: 0, backgroundColor: '#090d16' }}>
         {children}
       </body>
