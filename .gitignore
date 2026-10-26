@@ -5,3 +5,4 @@ dist
 .DS_Store
 *.log
 repomix-output.xml
+.full-review.md

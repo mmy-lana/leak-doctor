@@ -2,9 +2,15 @@
   "name": "@leak-doctor/shared",
   "version": "0.1.2",
   "description": "Zero-dependency shared memory diagnostic schemas, contracts, and formatters for leak-doctor.",
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "homepage": "https://leak-doctor-web.vercel.app",
   "repository": {
     "type": "git",
@@ -21,7 +27,7 @@
   ],
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "default": "./dist/index.js"
     }
@@ -31,7 +37,8 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "tsc --noEmit"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

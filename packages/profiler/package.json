@@ -2,9 +2,11 @@
   "name": "@leak-doctor/profiler",
   "version": "0.1.2",
   "description": "Core WeakRef and FinalizationRegistry memory profiling and detached DOM leak tracking engine.",
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "LICENSE", "README.md"],
   "homepage": "https://leak-doctor-web.vercel.app",
   "repository": {
     "type": "git",
@@ -16,7 +18,7 @@
   "keywords": ["leak-doctor", "memory-leak", "detached-dom", "weakref", "finalizationregistry", "devtools", "react-19"],
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "default": "./dist/index.js"
     }
@@ -25,9 +27,10 @@
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.js",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "tsc --noEmit",
+    "test": "node --test ../../tests/"
   },
   "dependencies": {
     "@leak-doctor/shared": "workspace:*"
