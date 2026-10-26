@@ -1,6 +1,6 @@
 {
   "name": "@leak-doctor/profiler",
-  "version": "0.1.2",
+  "version": "0.2.3",
   "description": "Core WeakRef and FinalizationRegistry memory profiling and detached DOM leak tracking engine.",
   "license": "MIT",
   "main": "./dist/index.js",
