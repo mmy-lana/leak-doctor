@@ -17,6 +17,7 @@ interface TrackedRecord {
   retainedAt: number;
   type: LeakType;
   isDomElement: boolean;
+  expectFreed: boolean;
   meta?: Record<string, unknown>;
   stack?: string;
 }
@@ -30,6 +31,8 @@ export class LeakDoctorEngine {
   private finalizationRegistry: FinalizationRegistry<string> | null = null;
   private sampleTimer: ReturnType<typeof setInterval> | null = null;
   private listeners: Map<string, Set<EventCallback>> = new Map();
+  private firstUsedHeapBytes = 0;
+  private lastUsedHeapBytes = 0;
 
   private config: Required<ProfilerConfig> = {
     sampleIntervalMs: 3000,
@@ -87,6 +90,17 @@ export class LeakDoctorEngine {
     }
   }
 
+  /**
+   * Registers a target for retention monitoring.
+   *
+   * Semantics (BUG-001): non-DOM targets are "retention watched" by default and
+   * produce NO leak report while they stay alive — the engine cannot distinguish a
+   * legitimately long-lived object from a leak. Pass `meta: { expectFreed: true }`
+   * to assert the target should be garbage-collected once the application drops
+   * its references; a target still retained past `leakThresholdMs` is then reported
+   * as a leak. Detached DOM elements are always reported once retained past the
+   * threshold (a detached-but-uncollected node is a genuine leak signal).
+   */
   public track<T extends object>(target: T, description: string = 'Anonymous Object', meta?: Record<string, unknown>): string {
     if (typeof window === 'undefined' || !target) return '';
 
@@ -101,9 +115,17 @@ export class LeakDoctorEngine {
       retainedAt: Date.now(),
       type,
       isDomElement,
+      expectFreed: meta?.expectFreed === true,
       meta,
       stack: new Error().stack,
     };
+
+    // BUG-003: enforce maxRetainedObjects. Overflow behavior: registrations past the
+    // cap are refused (empty id) with a warning, keeping the registry bounded.
+    if (this.trackedItems.size >= this.config.maxRetainedObjects) {
+      SharedLogger.warn(`Tracker limit reached (${this.config.maxRetainedObjects}); ignoring "${description}".`);
+      return '';
+    }
 
     this.trackedItems.set(id, record);
 
@@ -152,7 +174,10 @@ export class LeakDoctorEngine {
         if (isDisconnected && retentionTimeMs >= this.config.leakThresholdMs) {
           isLeaked = true;
         }
-      } else if (retentionTimeMs >= this.config.leakThresholdMs) {
+      } else if (record.expectFreed && retentionTimeMs >= this.config.leakThresholdMs) {
+        // BUG-001: only targets the consumer asserted should have been freed
+        // (meta.expectFreed) are flagged. Strongly-referenced objects tracked for
+        // retention watching are never reported as leaks.
         isLeaked = true;
       }
 
@@ -196,6 +221,12 @@ export class LeakDoctorEngine {
       limitBytes = mem.jsHeapSizeLimit;
     }
 
+    // BUG-002: keep heap history for getMetrics().heapGrowthTrendRatio.
+    if (usedBytes > 0) {
+      if (this.firstUsedHeapBytes === 0) this.firstUsedHeapBytes = usedBytes;
+      this.lastUsedHeapBytes = usedBytes;
+    }
+
     return {
       timestamp: Date.now(),
       usedHeapBytes: usedBytes,
@@ -213,7 +244,9 @@ export class LeakDoctorEngine {
     return {
       totalLeakedCount: this.reports.size,
       totalActiveTrackers: this.trackedItems.size,
-      heapGrowthTrendRatio: 0,
+      // BUG-002: ratio of the latest observed used-heap to the first observed
+      // used-heap (1.0 = stable since first sample, >1 = growth). 0 before any sample.
+      heapGrowthTrendRatio: this.firstUsedHeapBytes > 0 ? this.lastUsedHeapBytes / this.firstUsedHeapBytes : 0,
       lastDiagnosticTime: Date.now(),
     };
   }
