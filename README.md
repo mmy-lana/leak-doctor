@@ -91,12 +91,12 @@ flowchart TD
     D -->|Yes| E[Normal Lifecycle]
     D -->|No, but retain count > 0| F[Flagged: Detached DOM Leak]
     C -->|GC Collects Target| G[Cleared: Reference Safely Freed]
-    F -->|Emit Diagnostic Event| H[LeakDoctor Toolbar / CLI Reporter]
+    F -->|Emit Diagnostic Event| H[LeakDoctor Toolbar]
 ```
 
 1. **Non-Intrusive Observation:** Targets are wrapped in native `WeakRef` instances, preventing the profiler from retaining memory or delaying Garbage Collection.
 2. **Lifecycle Notifications:** `FinalizationRegistry` signals when an object is properly reclaimed by the browser engine.
-3. **Detached State Checks:** For DOM nodes, the profiler verifies `Node.isConnected`. If detached but uncollected past a configurable threshold, a leak alert is generated.
+3. **Detached State Checks:** For DOM nodes, the profiler verifies `Node.isConnected`. If detached but uncollected past a configurable threshold, a leak alert is generated. Non-DOM objects are retention-watched silently by default and only reported when tracked with `meta: { expectFreed: true }` (an explicit assertion that the object should have been garbage-collected).
 
 ---
 
@@ -104,7 +104,7 @@ flowchart TD
 
 | Package / App | Description | Size / Stack |
 | :--- | :--- | :--- |
-| **`@leak-doctor/profiler`** | Core tracking engine (`WeakRef`, sweep scheduler) | `< 5 KB` (gzipped), 0 deps |
+| **`@leak-doctor/profiler`** | Core tracking engine (`WeakRef`, sweep scheduler) | `< 5 KB` (gzipped), 1 workspace dep |
 | **`@leak-doctor/toolbar`** | Web Component diagnostic HUD | `< 5 KB` (gzipped), Shadow DOM |
 | **`@leak-doctor/shared`** | Shared TypeScript contracts and formatters | Zero runtime overhead |
 | **`apps/playground`** | Interactive leak simulator and testbed | React 19, Vite |
@@ -112,16 +112,17 @@ flowchart TD
 
 ---
 
-## Headless Auditing (CLI / Web)
+## Headless Auditing (Web)
 
 Test public URLs without modifying client code via the headless auditor:
 
 1. Navigate to [leak-doctor-web.vercel.app](https://leak-doctor-web.vercel.app).
-2. Enter the target URL and execute an audit.
+2. Enter the target URL and execute an audit (optionally add button-text/CSS/XPath interaction rules).
 3. Inspect the report:
-   * **Health Score (0-100):** Memory hygiene evaluation.
-   * **Retained Size:** Byte volume uncollected post-forced GC.
-   * **DOM Detachments:** Total disconnected nodes retained in memory.
+   * **Passive Health Score (0-100):** Baseline memory/DOM-density hygiene evaluation.
+   * **Interactive Leak Score (0-100):** Evaluation of retained heap growth after the tested action.
+   * **Retained Leak Size:** Heap growth (post-forced GC) triggered by the interaction.
+   * **Tested Action & Recommendations:** Which button was exercised and diagnostic guidance.
 
 ---
 
@@ -144,6 +145,16 @@ pnpm dev
 
 * **Playground:** `http://localhost:5173`
 * **Web Auditor:** `http://localhost:3000`
+
+```bash
+# Type-check all workspace packages
+pnpm lint
+
+# Run unit tests (requires pnpm build first)
+pnpm test
+```
+
+> **Platform note (PROD-002):** the headless scanner's production mode bundles a Linux Chromium (`@sparticuz/chromium`) and therefore only runs on Linux hosts (e.g. the Vercel deployment). On macOS/Windows, scanning works through `next dev`, which drives the locally installed Google Chrome.
 
 ---
 
