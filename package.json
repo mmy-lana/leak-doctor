@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "node --test \"tests/*.test.mjs\"",
+    "test": "node --test",
     "changeset": "changeset"
   },
   "packageManager": "pnpm@9.15.0",
