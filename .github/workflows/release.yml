@@ -30,7 +30,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # @changesets/cli 3.x requires Node ^22.11 || ^24 (module.enableCompileCache)
+          # and npm >= 10.9.0, so the release toolchain cannot run on Node 20.
+          node-version: 24
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
